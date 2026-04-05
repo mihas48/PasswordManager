@@ -1,24 +1,20 @@
-﻿using System.Text;
+﻿using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using PasswordManager.App.ViewModels;
+using PasswordManager.Services;
 
 namespace PasswordManager.App
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
+
+            var logger = new LoggerService(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log.txt"));
+            var passwordGenerator = new PasswordGeneratorService();
+
+            DataContext = new MainViewModel(logger, passwordGenerator);
         }
     }
 }
