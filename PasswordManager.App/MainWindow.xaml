@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PasswordManager.App" xmlns:viewmodels="clr-namespace:PasswordManager.App.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="900" Width="800">
     <StackPanel Orientation="Vertical">
         <Label Content="PasswordManager"
          FontFamily="Segoe Print"
@@ -23,36 +23,80 @@
         <StackPanel Orientation="Vertical"
                     Width="250">
             <StackPanel Orientation="Vertical">
-                <!-- Верхний регистр -->
                 <CheckBox IsChecked="{Binding UseUpperCase}"/>
                 <Label x:Name="UpperCaseLabel" Content="Верхний регистр"/>
 
-                <!-- Нижний регистр -->
                 <CheckBox IsChecked="{Binding UseLowerCase}"/>
                 <Label x:Name="LowerCaseLabel" Content="Нижний регистр"/>
 
-                <!-- Цифры -->
                 <CheckBox IsChecked="{Binding UseNumbers}"/>
-                <Label x:Name="DigitsLabel" Content="Цифры"/>
+                <Label x:Name="NumbersLabel" Content="Цифры"/>
 
-                <!-- Символы -->
                 <CheckBox IsChecked="{Binding UseSymbols}"/>
                 <Label x:Name="SymbolsLabel" Content="Символы"/>
             </StackPanel>
         </StackPanel>
         
         <Border Height="50"
-          Width="120"
+                Width="120"
                 Margin="10">
             <Button Content="Генерация пароля"
                     Command="{Binding GenerateCommand}"/>
         </Border>
 
-        <Label Width="600"
+        <Label Width="650"
                Height="40"
                FontSize="20"
                FontStyle="Oblique"
                Foreground="Green"
             Content="{Binding GeneratedPassword}"/>
+
+        <Label Width="350"
+               Height="30"
+               Margin="10"
+            Content="Введите текст для шифрования в поле снизу"/>
+
+        <TextBox Width="450"
+               Height="40"
+                 x:Name="tbTextForEncrypt"
+                 Text="{Binding TextForEncrypt, UpdateSourceTrigger=PropertyChanged}"
+            />
+
+        <Border Height="50"
+                Width="120"
+                Margin="10">
+            <Button Content="Шифрование текста"
+                    Command="{Binding EncryptCommand}"/>
+        </Border>
+
+        <Label Width="450"
+               Height="40"
+               FontWeight="Bold"
+               Content="Зашифрованный текст"/>
+
+        <Label Width="650"
+               Height="40"
+               Margin="10"
+               Content="{Binding EncryptedText}"
+            />
+        
+                <Border Height="50"
+                Width="130"
+                Margin="10">
+            <Button Content="Расшифрование текста"
+                    Command="{Binding DecryptCommand}"/>
+        </Border>
+
+        <Label Width="450"
+       Height="40"
+       FontWeight="Bold"
+       Content="Расшифрованный текст"/>
+
+        <Label Width="650"
+       Height="40"
+       Margin="10"
+       Content="{Binding DecryptedText}"
+    />
+
     </StackPanel>
 </Window>

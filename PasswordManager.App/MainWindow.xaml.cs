@@ -13,8 +13,9 @@ namespace PasswordManager.App
 
             var logger = new LoggerService(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log.txt"));
             var passwordGenerator = new PasswordGeneratorService();
+            var crypto = new CryptoService();
 
-            DataContext = new MainViewModel(logger, passwordGenerator);
+            DataContext = new MainViewModel(logger, passwordGenerator, crypto);
         }
     }
 }

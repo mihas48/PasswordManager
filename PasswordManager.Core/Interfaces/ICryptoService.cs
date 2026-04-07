@@ -2,8 +2,8 @@
 {
     public interface ICryptoService
     {
-        byte[] DeriveKey(string masterPassword, byte[] salt);
-        byte[] Encrypt(string plainText, byte[] key);
-        string Decrypt(byte[] cipherText, byte[] key);
+        public byte[] DeriveKey(string masterPassword, byte[] salt);
+        public byte[] Encrypt(string plainText, byte[] key);
+        public string Decrypt(byte[] cipherTextWithIv, byte[] key, byte[] iv);
     }
 }
