@@ -52,14 +52,17 @@ namespace PasswordManager.Services
             return result;
         }
 
-        public string Decrypt(byte[] cipherTextWithIv, byte[] key, byte[] iv)
+        public string Decrypt(byte[] cipherTextWithIv, byte[] key)
         {
             if (cipherTextWithIv == null || cipherTextWithIv.Length <= 0)
                 throw new ArgumentNullException("cipherText");
-            if (key == null ||key.Length <= 0)
+            if (key == null || key.Length <= 0)
                 throw new ArgumentNullException("Key");
-            if (iv == null || iv.Length <= 0)
-                throw new ArgumentNullException("IV");
+
+            byte[] iv = new byte[16];
+            byte[] cipherText = new byte[cipherTextWithIv.Length - 16];
+            Buffer.BlockCopy(cipherTextWithIv, 0, iv, 0, 16);
+            Buffer.BlockCopy(cipherTextWithIv, 16, cipherText, 0, cipherTextWithIv.Length - 16);
 
             string plainText = null;
 
@@ -72,7 +75,7 @@ namespace PasswordManager.Services
                 ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 
                 // Create the streams used for decryption.
-                using (MemoryStream msDecrypt = new MemoryStream(cipherTextWithIv))
+                using (MemoryStream msDecrypt = new MemoryStream(cipherText))
                 {
                     using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                     {

@@ -54,7 +54,6 @@ namespace PasswordManager.App.ViewModels
 
         private byte[] _cipherText;
         private byte[] _key;
-        private byte[] _iv;
 
         //Команды
         [RelayCommand]
@@ -83,18 +82,9 @@ namespace PasswordManager.App.ViewModels
             byte[] key = _cryptoService.DeriveKey(masterPassword, salt);
             _key = key;
 
-            byte[] data = _cryptoService.Encrypt(TextForEncrypt, key);
+            _cipherText = _cryptoService.Encrypt(TextForEncrypt, key);
 
-            byte[] iv = new byte[16];
-            _iv = iv;
-            byte[] cipher = new byte[16];
-
-            Buffer.BlockCopy(data, 0, iv, 0, 16);
-            Buffer.BlockCopy(data, 16, cipher, 0, 16);
-
-            _cipherText = cipher;
-
-            EncryptedText = System.Convert.ToBase64String(cipher); 
+            EncryptedText = System.Convert.ToBase64String(_cipherText); 
         }
 
         [RelayCommand]
@@ -103,7 +93,7 @@ namespace PasswordManager.App.ViewModels
             if (EncryptedText == "")
                 throw new ArgumentNullException("Ошибка! Сначала зашифруйте текст");
 
-            DecryptedText =  _cryptoService.Decrypt(_cipherText, _key, _iv);
+            DecryptedText =  _cryptoService.Decrypt(_cipherText, _key);
         }
     }
 }

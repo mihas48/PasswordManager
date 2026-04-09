@@ -4,6 +4,6 @@
     {
         public byte[] DeriveKey(string masterPassword, byte[] salt);
         public byte[] Encrypt(string plainText, byte[] key);
-        public string Decrypt(byte[] cipherTextWithIv, byte[] key, byte[] iv);
+        public string Decrypt(byte[] cipherTextWithIv, byte[] key);
     }
 }
