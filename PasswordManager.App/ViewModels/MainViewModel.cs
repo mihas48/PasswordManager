@@ -1,8 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PasswordManager.Core.Interfaces;
-using PasswordManager.Services;
-using System.Numerics;
 using System.Security.Cryptography;
 
 namespace PasswordManager.App.ViewModels

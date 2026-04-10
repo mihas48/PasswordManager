@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace PasswordManager.App
 {
@@ -7,5 +6,4 @@ namespace PasswordManager.App
     {
     
     }
-
 }
