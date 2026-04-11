@@ -1,21 +1,17 @@
-﻿using System.IO;
+﻿using PasswordManager.App.ViewModels;
+using PasswordManager.Core.Interfaces;
 using System.Windows;
-using PasswordManager.App.ViewModels;
-using PasswordManager.Services;
 
 namespace PasswordManager.App
 {
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(IExportImportService exportImportService, IPasswordGeneratorService passwordGeneratorService,
+            ICryptoService cryptoService, ILoggerService loggerService, byte[] encryptionKey)
         {
             InitializeComponent();
-
-            var logger = new LoggerService(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log.txt"));
-            var passwordGenerator = new PasswordGeneratorService();
-            var crypto = new CryptoService();
-
-            DataContext = new MainViewModel(logger, passwordGenerator, crypto);
+            var vm = new MainViewModel(loggerService, passwordGeneratorService, cryptoService, exportImportService, encryptionKey);
+            DataContext = vm;
         }
     }
 }

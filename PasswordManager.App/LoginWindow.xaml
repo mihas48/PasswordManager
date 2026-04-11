@@ -1,0 +1,103 @@
+﻿<Window x:Class="PasswordManager.App.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Регистрация мастер-пароля" Height="450" Width="500"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="#F0F9F0">
+
+    <Grid>
+        <!-- Центрированный блок -->
+        <Border Width="400" 
+                Background="White"
+                CornerRadius="12"
+                Padding="30,20"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center">
+            <Border.Effect>
+                <DropShadowEffect Color="#2E7D32" BlurRadius="15" ShadowDepth="0" Opacity="0.2"/>
+            </Border.Effect>
+
+            <StackPanel>
+                <!-- Заголовок -->
+                <TextBlock Text="РЕГИСТРАЦИЯ" 
+                           FontSize="24" 
+                           FontWeight="Bold" 
+                           Foreground="#2E7D32" 
+                           HorizontalAlignment="Center" 
+                           Margin="0,0,0,25"/>
+
+                <!-- Поле: мастер-пароль -->
+                <TextBlock Text="Введите мастер-пароль" 
+                           FontSize="12" 
+                           Foreground="#33691E" 
+                           Margin="0,0,0,5"/>
+                <PasswordBox x:Name="MasterPasswordBox" 
+                             Height="35" 
+                             FontSize="14" 
+                             BorderBrush="#81C784" 
+                             BorderThickness="1.5"
+                             Background="#F1F8E9"
+                             PasswordChar="●"
+                             Margin="0,0,0,15"/>
+
+                <!-- Поле: повтор пароля -->
+                <TextBlock Text="Повторите ввод мастер-пароля" 
+                           FontSize="12" 
+                           Foreground="#33691E" 
+                           Margin="0,0,0,5"/>
+                <PasswordBox x:Name="ConfirmPasswordBox" 
+                             Height="35" 
+                             FontSize="14" 
+                             BorderBrush="#81C784" 
+                             BorderThickness="1.5"
+                             Background="#F1F8E9"
+                             PasswordChar="●"
+                             Margin="0,0,0,25"/>
+
+                <!-- Предупреждающее сообщение -->
+                <Border Background="#E8F5E9" CornerRadius="6" Padding="10" Margin="0,0,0,20">
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="#1B5E20">
+                        <Run Text="⚠️ "/>
+                        <Run Text="ОБЯЗАТЕЛЬНО запомните мастер-пароль! Его невозможно восстановить или изменить. Это единственный ключ ко всем вашим данным."/>
+                    </TextBlock>
+                </Border>
+
+                <!-- Кнопка регистрации -->
+                <Button Content="Зарегистрироваться" 
+                        Height="40" 
+                        FontSize="14" 
+                        FontWeight="SemiBold"
+                        Background="#43A047" 
+                        Foreground="White"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="Button_Click">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="6"/>
+                        </Style>
+                    </Button.Resources>
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" 
+                                    CornerRadius="6"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" 
+                                                  VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#2E7D32"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Background" Value="#1B5E20"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

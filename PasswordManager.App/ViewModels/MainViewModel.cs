@@ -11,12 +11,17 @@ namespace PasswordManager.App.ViewModels
         private readonly ILoggerService _loggerService;
         private readonly IPasswordGeneratorService _passwordGeneratorService;
         private readonly ICryptoService _cryptoService;
+        private readonly IExportImportService _exportImportService;
+        private readonly byte[] _encryptionKey;
 
-        public MainViewModel(ILoggerService loggerService, IPasswordGeneratorService passwordGeneratorService, ICryptoService cryptoService)
+        public MainViewModel(ILoggerService loggerService, IPasswordGeneratorService passwordGeneratorService, 
+            ICryptoService cryptoService, IExportImportService exportImportService, byte[] encryptionKey)
         {
             _loggerService = loggerService;
             _passwordGeneratorService = passwordGeneratorService;
             _cryptoService = cryptoService;
+            _exportImportService = exportImportService;
+            _encryptionKey = encryptionKey;
         }
 
         //Свойства
