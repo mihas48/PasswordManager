@@ -3,100 +3,690 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PasswordManager.App" xmlns:viewmodels="clr-namespace:PasswordManager.App.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
+        xmlns:viewmodels="clr-namespace:PasswordManager.App.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="800">
-    <StackPanel Orientation="Vertical">
-        <Label Content="PasswordManager"
-         FontFamily="Segoe Print"
-         FontSize="32"
-         Foreground="Violet"/>
-        <Border Height="50"
-          Width="80">
-            <Button Content="Логирование"
-                    Command="{Binding LogCommand}"/>
+        d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
+        Title="Password Manager"
+        Height="750" Width="1120"
+        MinHeight="600" MinWidth="860"
+        WindowStartupLocation="CenterScreen"
+        Background="#F0F9F0">
+
+    <Window.Resources>
+
+        <!-- КНОПКИ -->
+
+        <!-- основная кнопка -->
+        <Style x:Key="BtnGreen" TargetType="Button">
+            <Setter Property="Background"    Value="#43A047"/>
+            <Setter Property="Foreground"    Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor"        Value="Hand"/>
+            <Setter Property="FontWeight"    Value="SemiBold"/>
+            <Setter Property="FontSize"      Value="13"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="7"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#2E7D32"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#1B5E20"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#A5D6A7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- кнопка опасное действие -->
+        <Style x:Key="BtnDanger" TargetType="Button">
+            <Setter Property="Background"    Value="#E53935"/>
+            <Setter Property="Foreground"    Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor"        Value="Hand"/>
+            <Setter Property="FontWeight"    Value="SemiBold"/>
+            <Setter Property="FontSize"      Value="13"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="7"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#C62828"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#B71C1C"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#EF9A9A"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Вторичная кнопка (обводка) -->
+        <Style x:Key="BtnOutline" TargetType="Button">
+            <Setter Property="Background"     Value="#E8F5E9"/>
+            <Setter Property="Foreground"     Value="#2E7D32"/>
+            <Setter Property="BorderBrush"    Value="#81C784"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Cursor"         Value="Hand"/>
+            <Setter Property="FontWeight"     Value="SemiBold"/>
+            <Setter Property="FontSize"       Value="13"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="7"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#C8E6C9"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#A5D6A7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ПОЛЯ ВВОДА -->
+
+        <Style x:Key="InputBox" TargetType="TextBox">
+            <Setter Property="Height"                 Value="36"/>
+            <Setter Property="FontSize"               Value="13"/>
+            <Setter Property="BorderBrush"            Value="#81C784"/>
+            <Setter Property="BorderThickness"        Value="1.5"/>
+            <Setter Property="Background"             Value="#F1F8E9"/>
+            <Setter Property="Padding"                Value="10,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FocusVisualStyle"       Value="{x:Null}"/>
+        </Style>
+
+        <!-- ТИПОГРАФИКА -->
+
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="FontSize"    Value="12"/>
+            <Setter Property="Foreground"  Value="#33691E"/>
+            <Setter Property="FontWeight"  Value="SemiBold"/>
+            <Setter Property="Margin"      Value="0,0,0,5"/>
+        </Style>
+
+        <Style x:Key="PageTitle" TargetType="TextBlock">
+            <Setter Property="FontSize"   Value="22"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#2E7D32"/>
+        </Style>
+
+        <Style x:Key="SubHeader" TargetType="TextBlock">
+            <Setter Property="FontSize"   Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#2E7D32"/>
+            <Setter Property="Margin"     Value="0,0,0,14"/>
+        </Style>
+
+        <!-- КАРТОЧКИ-->
+
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background"    Value="White"/>
+            <Setter Property="CornerRadius"  Value="10"/>
+            <Setter Property="Padding"       Value="22"/>
+        </Style>
+
+        <!-- ЧЕКБОКСЫ-->
+
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground"  Value="#2E7D32"/>
+            <Setter Property="FontSize"    Value="13"/>
+            <Setter Property="Cursor"      Value="Hand"/>
+            <Setter Property="Margin"      Value="0,5"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        </Style>
+
+        <!-- боковая навигация -->
+
+        <Style TargetType="TabItem">
+            <Setter Property="Foreground"    Value="#A5D6A7"/>
+            <Setter Property="FontSize"      Value="13"/>
+            <Setter Property="FontWeight"    Value="SemiBold"/>
+            <Setter Property="Cursor"        Value="Hand"/>
+            <Setter Property="Padding"       Value="0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="tabBorder"
+                                Background="Transparent"
+                                Padding="18,15">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="tabIcon"
+                                           Text="{TemplateBinding Tag}"
+                                           FontSize="16"
+                                           Margin="0,0,11,0"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock Text="{TemplateBinding Header}"
+                                           Foreground="{Binding Foreground,
+                                               RelativeSource={RelativeSource TemplatedParent}}"
+                                           FontSize="{TemplateBinding FontSize}"
+                                           FontWeight="{TemplateBinding FontWeight}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="tabBorder" Property="Background" Value="#2E7D32"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsSelected"   Value="False"/>
+                                    <Condition Property="IsMouseOver"  Value="True"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="tabBorder" Property="Background" Value="#1A3C1A"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- DATAGRID -->
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background"      Value="#E8F5E9"/>
+            <Setter Property="Foreground"      Value="#1B5E20"/>
+            <Setter Property="FontWeight"      Value="Bold"/>
+            <Setter Property="FontSize"        Value="12"/>
+            <Setter Property="Height"          Value="38"/>
+            <Setter Property="Padding"         Value="12,0"/>
+            <Setter Property="BorderBrush"     Value="#C8E6C9"/>
+            <Setter Property="BorderThickness" Value="0,0,0,2"/>
+        </Style>
+
+        <Style TargetType="DataGridRow">
+            <Setter Property="Height"  Value="40"/>
+            <Setter Property="Cursor"  Value="Hand"/>
+            <Setter Property="Background" Value="White"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F1F8E9"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#C8E6C9"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="DataGridCell">
+            <Setter Property="BorderThickness"  Value="0"/>
+            <Setter Property="Padding"          Value="12,0"/>
+            <Setter Property="FontSize"         Value="13"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Padding="{TemplateBinding Padding}"
+                                Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background"   Value="Transparent"/>
+                    <Setter Property="BorderBrush"  Value="Transparent"/>
+                    <Setter Property="Foreground"   Value="#1B5E20"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="62"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ШАПКА -->
+        <Border Grid.Row="0" Background="#2E7D32">
+            <Border.Effect>
+                <DropShadowEffect Color="#1B5E20" BlurRadius="14"
+                                  ShadowDepth="3" Opacity="0.40"/>
+            </Border.Effect>
+            <Grid Margin="24,0">
+
+                <!-- Логотип -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="🔒" FontSize="22" Margin="0,0,10,0"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="PASSWORD MANAGER"
+                               FontSize="18" FontWeight="Bold"
+                               Foreground="White" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Кнопка журнала -->
+                <Button Content="📋  Журнал событий"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Width="168" Height="36"
+                        Padding="0"
+                        Background="#388E3C"
+                        FontSize="12"
+                        Style="{StaticResource BtnGreen}"/>
+            </Grid>
         </Border>
-        <Slider Width="500"
-            Minimum="4"
-                Maximum="64"
-                Value="{Binding PasswordLength}"/>
-        <StackPanel Orientation="Vertical"
-                    Width="250">
-            <StackPanel Orientation="Vertical">
-                <CheckBox IsChecked="{Binding UseUpperCase}"/>
-                <Label x:Name="UpperCaseLabel" Content="Верхний регистр"/>
 
-                <CheckBox IsChecked="{Binding UseLowerCase}"/>
-                <Label x:Name="LowerCaseLabel" Content="Нижний регистр"/>
+        <!-- ОСНОВНАЯ ОБЛАСТЬ:  Sidebar + Контент
+             TabControl с левым TabStrip -->
+        <TabControl Grid.Row="1"
+                    TabStripPlacement="Left"
+                    Background="#1B5E20"
+                    BorderThickness="0">
 
-                <CheckBox IsChecked="{Binding UseNumbers}"/>
-                <Label x:Name="NumbersLabel" Content="Цифры"/>
+            <!-- ВКЛАДКА 1 — МОИ ПАРОЛИ -->
+            <TabItem Header="Мои пароли" Tag="🗂️" IsSelected="True">
+                <ScrollViewer Background="#F0F9F0"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="28,24,28,28">
 
-                <CheckBox IsChecked="{Binding UseSymbols}"/>
-                <Label x:Name="SymbolsLabel" Content="Символы"/>
-            </StackPanel>
-        </StackPanel>
-        
-        <Border Height="50"
-                Width="120"
-                Margin="10">
-            <Button Content="Генерация пароля"
-                    Command="{Binding GenerateCommand}"/>
-        </Border>
+                        <!-- Строка заголовка + кнопки -->
+                        <Grid Margin="0,0,0,18">
+                            <TextBlock Text="Мои пароли"
+                                       Style="{StaticResource PageTitle}"
+                                       VerticalAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center">
+                                <Button Content="＋  Добавить"
+                                        Style="{StaticResource BtnGreen}"
+                                        Height="36" Padding="16,0"
+                                        Margin="0,0,8,0"/>
+                                <Button Content="✏️  Изменить"
+                                        Style="{StaticResource BtnOutline}"
+                                        Height="36" Padding="16,0"
+                                        Margin="0,0,8,0"/>
+                                <Button Content="🗑️  Удалить"
+                                        Style="{StaticResource BtnDanger}"
+                                        Height="36" Padding="16,0"/>
+                            </StackPanel>
+                        </Grid>
 
-        <Label Width="650"
-               Height="40"
-               FontSize="20"
-               FontStyle="Oblique"
-               Foreground="Green"
-            Content="{Binding GeneratedPassword}"/>
+                        <!-- Таблица паролей -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,20">
+                            <Border.Effect>
+                                <DropShadowEffect Color="#2E7D32" BlurRadius="12"
+                                                  ShadowDepth="0" Opacity="0.12"/>
+                            </Border.Effect>
+                            <DataGrid x:Name="PasswordsDataGrid"
+                                      ItemsSource="{Binding Entries}"
+                                      SelectedItem="{Binding SelectedEntry}"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="False"
+                                      CanUserDeleteRows="False"
+                                      IsReadOnly="True"
+                                      SelectionMode="Single"
+                                      GridLinesVisibility="Horizontal"
+                                      HorizontalGridLinesBrush="#E8F5E9"
+                                      Background="White"
+                                      RowBackground="White"
+                                      AlternatingRowBackground="#FAFFF6"
+                                      BorderThickness="0"
+                                      Height="270">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Название"
+                                                        Binding="{Binding Title}"
+                                                        Width="*" MinWidth="120"/>
+                                    <DataGridTextColumn Header="Логин"
+                                                        Binding="{Binding Login}"
+                                                        Width="*" MinWidth="120"/>
+                                    <DataGridTextColumn Header="URL / Сайт"
+                                                        Binding="{Binding Url}"
+                                                        Width="1.3*" MinWidth="140"/>
+                                    <DataGridTextColumn Header="Заметки"
+                                                        Binding="{Binding Notes}"
+                                                        Width="1.5*" MinWidth="150"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Border>
 
-        <Label Width="350"
-               Height="30"
-               Margin="10"
-            Content="Введите текст для шифрования в поле снизу"/>
+                        <!-- Форма добавления / редактирования -->
+                        <Border Style="{StaticResource Card}">
+                            <Border.Effect>
+                                <DropShadowEffect Color="#2E7D32" BlurRadius="12"
+                                                  ShadowDepth="0" Opacity="0.12"/>
+                            </Border.Effect>
+                            <StackPanel>
+                                <TextBlock Text="Добавить / Редактировать запись"
+                                           Style="{StaticResource SubHeader}"/>
 
-        <TextBox Width="450"
-               Height="40"
-                 x:Name="tbTextForEncrypt"
-                 Text="{Binding TextForEncrypt, UpdateSourceTrigger=PropertyChanged}"
-            />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition Height="14"/>
+                                        <RowDefinition/>
+                                        <RowDefinition Height="14"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
 
-        <Border Height="50"
-                Width="120"
-                Margin="10">
-            <Button Content="Шифрование текста"
-                    Command="{Binding EncryptCommand}"/>
-        </Border>
+                                    <!-- Название -->
+                                    <StackPanel Grid.Row="0" Grid.Column="0">
+                                        <TextBlock Text="Название" Style="{StaticResource FieldLabel}"/>
+                                        <TextBox Style="{StaticResource InputBox}"
+                                                 Text="{Binding EntryTitle,
+                                                     UpdateSourceTrigger=PropertyChanged}"/>
+                                    </StackPanel>
 
-        <Label Width="450"
-               Height="40"
-               FontWeight="Bold"
-               Content="Зашифрованный текст"/>
+                                    <!-- Логин -->
+                                    <StackPanel Grid.Row="0" Grid.Column="2">
+                                        <TextBlock Text="Логин / Email" Style="{StaticResource FieldLabel}"/>
+                                        <TextBox Style="{StaticResource InputBox}"
+                                                 Text="{Binding EntryLogin,
+                                                     UpdateSourceTrigger=PropertyChanged}"/>
+                                    </StackPanel>
 
-        <Label Width="650"
-               Height="40"
-               Margin="10"
-               Content="{Binding EncryptedText}"
-            />
-        
-                <Border Height="50"
-                Width="130"
-                Margin="10">
-            <Button Content="Расшифрование текста"
-                    Command="{Binding DecryptCommand}"/>
-        </Border>
+                                    <!-- Пароль -->
+                                    <StackPanel Grid.Row="2" Grid.Column="0">
+                                        <TextBlock Text="Пароль" Style="{StaticResource FieldLabel}"/>
+                                        <TextBox Style="{StaticResource InputBox}"
+                                                 Text="{Binding EntryPassword,
+                                                     UpdateSourceTrigger=PropertyChanged}"/>
+                                    </StackPanel>
 
-        <Label Width="450"
-       Height="40"
-       FontWeight="Bold"
-       Content="Расшифрованный текст"/>
+                                    <!-- URL -->
+                                    <StackPanel Grid.Row="2" Grid.Column="2">
+                                        <TextBlock Text="URL / Сайт" Style="{StaticResource FieldLabel}"/>
+                                        <TextBox Style="{StaticResource InputBox}"
+                                                 Text="{Binding EntryUrl,
+                                                     UpdateSourceTrigger=PropertyChanged}"/>
+                                    </StackPanel>
 
-        <Label Width="650"
-       Height="40"
-       Margin="10"
-       Content="{Binding DecryptedText}"
-    />
+                                    <!-- Заметки -->
+                                    <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
+                                        <TextBlock Text="Заметки" Style="{StaticResource FieldLabel}"/>
+                                        <TextBox Style="{StaticResource InputBox}"
+                                                 Height="66"
+                                                 TextWrapping="Wrap"
+                                                 AcceptsReturn="True"
+                                                 VerticalScrollBarVisibility="Auto"
+                                                 VerticalContentAlignment="Top"
+                                                 Padding="10,8"
+                                                 Text="{Binding EntryNotes,
+                                                     UpdateSourceTrigger=PropertyChanged}"/>
+                                    </StackPanel>
+                                </Grid>
 
-    </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Right"
+                                            Margin="0,18,0,0">
+                                    <Button Content="Сохранить запись"
+                                            Style="{StaticResource BtnGreen}"
+                                            Height="38" Padding="22,0"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ВКЛАДКА 2 — ГЕНЕРАТОР ПАРОЛЕЙ -->
+            <TabItem Header="Генератор" Tag="⚙️">
+                <ScrollViewer Background="#F0F9F0"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="28,24,28,28" MaxWidth="700"
+                                HorizontalAlignment="Left">
+
+                        <TextBlock Text="Генератор паролей"
+                                   Style="{StaticResource PageTitle}"
+                                   Margin="0,0,0,20"/>
+
+                        <Border Style="{StaticResource Card}">
+                            <Border.Effect>
+                                <DropShadowEffect Color="#2E7D32" BlurRadius="12"
+                                                  ShadowDepth="0" Opacity="0.12"/>
+                            </Border.Effect>
+                            <StackPanel>
+
+                                <!-- Длина пароля -->
+                                <TextBlock Text="Длина пароля"
+                                           Style="{StaticResource FieldLabel}"
+                                           FontSize="13" Margin="0,0,0,8"/>
+                                <Grid Margin="0,0,0,24">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="14"/>
+                                        <ColumnDefinition Width="58"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Slider Grid.Column="0"
+                                            Minimum="4" Maximum="64"
+                                            VerticalAlignment="Center"
+                                            Value="{Binding PasswordLength}"
+                                            TickFrequency="4"
+                                            IsSnapToTickEnabled="True"
+                                            Foreground="#43A047"/>
+                                    <Border Grid.Column="2"
+                                            Background="#E8F5E9"
+                                            BorderBrush="#81C784"
+                                            BorderThickness="1.5"
+                                            CornerRadius="7"
+                                            Height="36">
+                                        <TextBlock Text="{Binding PasswordLength}"
+                                                   Foreground="#2E7D32"
+                                                   FontWeight="Bold"
+                                                   FontSize="16"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+                                </Grid>
+
+                                <!-- Набор символов -->
+                                <TextBlock Text="Набор символов"
+                                           Style="{StaticResource FieldLabel}"
+                                           FontSize="13" Margin="0,0,0,8"/>
+                                <Grid Margin="0,0,0,24">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <CheckBox Grid.Row="0" Grid.Column="0"
+                                              Content="Верхний регистр  (A – Z)"
+                                              IsChecked="{Binding UseUpperCase}"/>
+                                    <CheckBox Grid.Row="0" Grid.Column="1"
+                                              Content="Нижний регистр  (a – z)"
+                                              IsChecked="{Binding UseLowerCase}"/>
+                                    <CheckBox Grid.Row="1" Grid.Column="0"
+                                              Content="Цифры  (0 – 9)"
+                                              IsChecked="{Binding UseNumbers}"/>
+                                    <CheckBox Grid.Row="1" Grid.Column="1"
+                                              Content="Спецсимволы  (!@#$…)"
+                                              IsChecked="{Binding UseSymbols}"/>
+                                </Grid>
+
+                                <!-- Разделитель -->
+                                <Rectangle Height="1" Fill="#E8F5E9" Margin="0,0,0,22"/>
+
+                                <!-- Кнопка -->
+                                <Button Content="⚡  Сгенерировать пароль"
+                                        Style="{StaticResource BtnGreen}"
+                                        Height="42" Padding="0"
+                                        FontSize="14"
+                                        Width="230"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,0,0,20"/>
+
+                                <!-- Результат -->
+                                <TextBlock Text="Сгенерированный пароль"
+                                           Style="{StaticResource FieldLabel}"
+                                           FontSize="13"/>
+                                <Border Background="#E8F5E9"
+                                        BorderBrush="#81C784"
+                                        BorderThickness="1.5"
+                                        CornerRadius="7"
+                                        Padding="14,12"
+                                        Margin="0,5,0,0">
+                                    <Grid>
+                                        <TextBlock Text="{Binding GeneratedPassword}"
+                                                   Foreground="#1B5E20"
+                                                   FontSize="17"
+                                                   FontWeight="Bold"
+                                                   FontFamily="Consolas"
+                                                   VerticalAlignment="Center"
+                                                   TextWrapping="Wrap"/>
+                                        <Button Content="📋 Копировать"
+                                                Style="{StaticResource BtnOutline}"
+                                                Height="30" Padding="12,0"
+                                                FontSize="12"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ВКЛАДКА 3 — ШИФРОВАНИЕ -->
+            <TabItem Header="Шифрование" Tag="🔐">
+                <ScrollViewer Background="#F0F9F0"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="28,24,28,28" MaxWidth="700"
+                                HorizontalAlignment="Left">
+
+                        <TextBlock Text="Шифрование текста"
+                                   Style="{StaticResource PageTitle}"
+                                   Margin="0,0,0,20"/>
+
+                        <!-- ── ШИФРОВАНИЕ ── -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,20">
+                            <Border.Effect>
+                                <DropShadowEffect Color="#2E7D32" BlurRadius="12"
+                                                  ShadowDepth="0" Opacity="0.12"/>
+                            </Border.Effect>
+                            <StackPanel>
+                                <TextBlock Text="🔒 Зашифровать"
+                                           Style="{StaticResource SubHeader}"/>
+
+                                <TextBlock Text="Текст для шифрования"
+                                           Style="{StaticResource FieldLabel}"/>
+                                <TextBox x:Name="tbTextForEncrypt"
+                                         Style="{StaticResource InputBox}"
+                                         Height="90"
+                                         TextWrapping="Wrap"
+                                         AcceptsReturn="True"
+                                         VerticalScrollBarVisibility="Auto"
+                                         VerticalContentAlignment="Top"
+                                         Padding="10,8"
+                                         Margin="0,0,0,16"
+                                         Text="{Binding TextForEncrypt,
+                                             UpdateSourceTrigger=PropertyChanged}"/>
+
+                                <Button Content="🔒  Зашифровать текст"
+                                        Style="{StaticResource BtnGreen}"
+                                        Height="38" Padding="20,0"
+                                        Width="195"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,0,0,18"/>
+
+                                <TextBlock Text="Результат"
+                                           Style="{StaticResource FieldLabel}"/>
+                                <Border Background="#E8F5E9"
+                                        BorderBrush="#81C784"
+                                        BorderThickness="1.5"
+                                        CornerRadius="7"
+                                        Padding="12,10"
+                                        MinHeight="48">
+                                    <TextBlock Text="{Binding EncryptedText}"
+                                               Foreground="#1B5E20"
+                                               FontFamily="Consolas"
+                                               FontSize="12"
+                                               TextWrapping="Wrap"/>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- ── РАСШИФРОВАНИЕ ── -->
+                        <Border Style="{StaticResource Card}">
+                            <Border.Effect>
+                                <DropShadowEffect Color="#2E7D32" BlurRadius="12"
+                                                  ShadowDepth="0" Opacity="0.12"/>
+                            </Border.Effect>
+                            <StackPanel>
+                                <TextBlock Text="🔓 Расшифровать"
+                                           Style="{StaticResource SubHeader}"/>
+
+                                <Button Content="🔓  Расшифровать текст"
+                                        Style="{StaticResource BtnGreen}"
+                                        Background="#388E3C"
+                                        Height="38" Padding="20,0"
+                                        Width="205"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,0,0,18"/>
+
+                                <TextBlock Text="Расшифрованный текст"
+                                           Style="{StaticResource FieldLabel}"/>
+                                <Border Background="#E8F5E9"
+                                        BorderBrush="#81C784"
+                                        BorderThickness="1.5"
+                                        CornerRadius="7"
+                                        Padding="12,10"
+                                        MinHeight="48">
+                                    <TextBlock Text="{Binding DecryptedText}"
+                                               Foreground="#1B5E20"
+                                               FontFamily="Consolas"
+                                               FontSize="13"
+                                               TextWrapping="Wrap"/>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
 </Window>

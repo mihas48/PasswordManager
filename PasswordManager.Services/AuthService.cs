@@ -14,7 +14,7 @@ namespace PasswordManager.Services
         }
 
         public bool IsMasterPasswordSet()
-            => (File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "/master.dat")));
+            => (File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "master.dat")));
 
         public void CreateMasterPassword(string password)
         {
@@ -26,7 +26,7 @@ namespace PasswordManager.Services
             byte[] data = new byte[salt.Length + key.Length];
             Buffer.BlockCopy(salt, 0, data, 0, salt.Length);
             Buffer.BlockCopy(key, 0, data, salt.Length, key.Length);
-            File.WriteAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "/master.dat"), data);
+            File.WriteAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "master.dat"), data);
         }
 
         public bool ValidateMasterPassword(string password)
@@ -34,7 +34,7 @@ namespace PasswordManager.Services
             if (string.IsNullOrWhiteSpace(password))
                 throw new ArgumentNullException("Ошибка! Пароль не может быть пустым!");
 
-            byte[] fileData = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "/master.dat"));
+            byte[] fileData = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "master.dat"));
 
             byte[] salt = new byte[32];
             byte[] masterPassword = new byte[32];
