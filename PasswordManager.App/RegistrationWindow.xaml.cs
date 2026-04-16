@@ -9,9 +9,9 @@ using System.Windows.Controls;
 namespace PasswordManager.App
 {
     /// <summary>
-    /// Логика взаимодействия для LoginWindow.xaml
+    /// Логика взаимодействия для RegistrationWindow.xaml
     /// </summary>
-    public partial class LoginWindow : Window
+    public partial class RegistrationWindow : Window
     {
         IAuthService _authService;
         IExportImportService _exportImportService;
@@ -19,7 +19,7 @@ namespace PasswordManager.App
         ILoggerService _loggerService;
         IPasswordGeneratorService _passwordGeneratorService;
 
-        public LoginWindow(IAuthService authService, IExportImportService exportImportService, ICryptoService cryptoService,
+        public RegistrationWindow(IAuthService authService, IExportImportService exportImportService, ICryptoService cryptoService,
             ILoggerService loggerService, IPasswordGeneratorService passwordGeneratorService)
         {
             InitializeComponent();
@@ -31,7 +31,7 @@ namespace PasswordManager.App
             _passwordGeneratorService = passwordGeneratorService;
         }
 
-        private void ButtonLogin_Click(object sender, RoutedEventArgs e)
+        private void ButtonRegistration_Click(object sender, RoutedEventArgs e)
         {
             string password = MasterPasswordBox.Password;
 
@@ -41,30 +41,18 @@ namespace PasswordManager.App
                 return;
             }
 
-            // Режим входа
-            if (!_authService.ValidateMasterPassword(password))
+            string confirm = ConfirmPasswordBox.Password;
+            if (string.IsNullOrEmpty(confirm) || password != confirm)
             {
-                MessageBox.Show("Неверный пароль");
+                MessageBox.Show("Пароли не совпадают");
                 return;
             }
+            _authService.CreateMasterPassword(password);
+            MessageBox.Show("Мастер-пароль создан. Теперь войдите.");
 
-            // Получаем ключ
-            byte[] encryptionKey = _authService.GetEncryptionKey();
-
-            // Загружаем данные
-            try
-            {
-                _exportImportService.LoadData(encryptionKey);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка загрузки: {ex.Message}");
-                return;
-            }
-
-            // Открываем главное окно
-            var mainWindow = new MainWindow(_exportImportService, _passwordGeneratorService, _cryptoService, _loggerService, encryptionKey);
-            mainWindow.Show();
+            // Открываем окно входа в профиль
+            var loginWindow = new LoginWindow(_authService, _exportImportService, _cryptoService, _loggerService, _passwordGeneratorService);
+            loginWindow.Show();
             this.Close();
         }
     }
