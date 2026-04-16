@@ -14,7 +14,7 @@ namespace PasswordManager.App
             // Создаём экземпляры сервисов
             ICryptoService cryptoService = new CryptoService();
             IAuthService authService = new AuthService(cryptoService);
-            IExportImportService exportImportService = new ExportImportService(cryptoService, AppDomain.CurrentDomain.BaseDirectory.ToString());
+            IExportImportService exportImportService = new ExportImportService(cryptoService, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "passwords.dat"));
             ILoggerService loggerService = new LoggerService(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log.txt"));
             IPasswordGeneratorService passwordGeneratorService = new PasswordGeneratorService();
 

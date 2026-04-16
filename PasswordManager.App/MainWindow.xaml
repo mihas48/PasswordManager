@@ -371,9 +371,26 @@
                                     <DataGridTextColumn Header="Логин"
                                                         Binding="{Binding Login}"
                                                         Width="*" MinWidth="120"/>
-                                    <DataGridTextColumn Header="URL / Сайт"
+                                    <DataGridTemplateColumn Header="Пароль">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding DisplayPassword}"/>
+                                                    <Button Content="👁" 
+                                                            Command="{Binding DataContext.TogglePasswordVisibilityCommand, 
+                                                        RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                            CommandParameter="{Binding}"/>
+                                                    <Button Content="📋" 
+                                                            Command="{Binding DataContext.CopyPasswordCommand, 
+                                                        RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                            CommandParameter="{Binding}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <!--                                    <DataGridTextColumn Header="URL / Сайт"
                                                         Binding="{Binding Url}"
-                                                        Width="1.3*" MinWidth="140"/>
+                                                        Width="1.3*" MinWidth="140"/>-->
                                     <DataGridTextColumn Header="Заметки"
                                                         Binding="{Binding Notes}"
                                                         Width="1.5*" MinWidth="150"/>
@@ -429,13 +446,15 @@
                                                      UpdateSourceTrigger=PropertyChanged}"/>
                                     </StackPanel>
 
-                                    <!-- URL -->
+                                    <!-- URL 
                                     <StackPanel Grid.Row="2" Grid.Column="2">
                                         <TextBlock Text="URL / Сайт" Style="{StaticResource FieldLabel}"/>
                                         <TextBox Style="{StaticResource InputBox}"
                                                  Text="{Binding EntryUrl,
                                                      UpdateSourceTrigger=PropertyChanged}"/>
+                                    
                                     </StackPanel>
+                                    -->
 
                                     <!-- Заметки -->
                                     <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
@@ -457,7 +476,8 @@
                                             Margin="0,18,0,0">
                                     <Button Content="Сохранить запись"
                                             Style="{StaticResource BtnGreen}"
-                                            Height="38" Padding="22,0"/>
+                                            Height="38" Padding="22,0"
+                                            Command="{Binding SaveEntryCommand}"/>
                                 </StackPanel>
                             </StackPanel>
                         </Border>
@@ -553,7 +573,8 @@
                                         FontSize="14"
                                         Width="230"
                                         HorizontalAlignment="Left"
-                                        Margin="0,0,0,20"/>
+                                        Margin="0,0,0,20"
+                                        Command="{Binding GenerateCommand}"/>
 
                                 <!-- Результат -->
                                 <TextBlock Text="Сгенерированный пароль"
@@ -572,13 +593,15 @@
                                                    FontWeight="Bold"
                                                    FontFamily="Consolas"
                                                    VerticalAlignment="Center"
-                                                   TextWrapping="Wrap"/>
+                                                   TextWrapping="Wrap"
+                                                   />
                                         <Button Content="📋 Копировать"
                                                 Style="{StaticResource BtnOutline}"
                                                 Height="30" Padding="12,0"
                                                 FontSize="12"
                                                 HorizontalAlignment="Right"
-                                                VerticalAlignment="Center"/>
+                                                VerticalAlignment="Center"
+                                                Command="{Binding CopyInClipboardCommand}"/>
                                     </Grid>
                                 </Border>
 
@@ -629,7 +652,8 @@
                                         Height="38" Padding="20,0"
                                         Width="195"
                                         HorizontalAlignment="Left"
-                                        Margin="0,0,0,18"/>
+                                        Margin="0,0,0,18"
+                                        Command="{Binding EncryptCommand}"/>
 
                                 <TextBlock Text="Результат"
                                            Style="{StaticResource FieldLabel}"/>
@@ -664,7 +688,8 @@
                                         Height="38" Padding="20,0"
                                         Width="205"
                                         HorizontalAlignment="Left"
-                                        Margin="0,0,0,18"/>
+                                        Margin="0,0,0,18"
+                                        Command="{Binding DecryptCommand}"/>
 
                                 <TextBlock Text="Расшифрованный текст"
                                            Style="{StaticResource FieldLabel}"/>

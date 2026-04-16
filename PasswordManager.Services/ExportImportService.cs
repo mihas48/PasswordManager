@@ -7,7 +7,7 @@ namespace PasswordManager.Services
 {
     public class ExportImportService : IExportImportService
     {
-        private List<PasswordEntry> _entries = new();
+        public ObservableCollection<PasswordEntry> Entries { get; private set; }
         private ICryptoService _cryptoService;
         private readonly string _filePath; //файл с зашифрованными данными
         private byte[] _currentKey;
@@ -20,41 +20,41 @@ namespace PasswordManager.Services
 
         public void AddEntry(PasswordEntry entry)
         {
-            _entries.Add(entry);
+            Entries.Add(entry);
             SaveData();
         }
 
         public void UpdateEntry(Guid id, PasswordEntry newEntry)
         {
-            var entry = _entries.FirstOrDefault(_entries => _entries.Id == id);
+            var entry = Entries.FirstOrDefault(Entries => Entries.Id == id);
 
             if (entry == null)
                 throw new ArgumentException("Ошибка! В списке нет соответствующего элемента для замены!");
 
-            int index = _entries.IndexOf(entry);
+            int index = Entries.IndexOf(entry);
 
-            _entries[index] = newEntry;
+            Entries[index] = newEntry;
 
             SaveData();
         }
 
         public void RemoveEntry(Guid id)
         {
-            var entry = _entries.FirstOrDefault(_entries => _entries.Id == id);
+            var entry = Entries.FirstOrDefault(Entries => Entries.Id == id);
 
             if (entry == null)
                 throw new ArgumentException("Ошибка! В списке нет соответствующего элемента для удаления!");
 
-            _entries.Remove(entry);
+            Entries.Remove(entry);
             SaveData();
         }
 
-        public List<PasswordEntry> GetAll()
-            => _entries;
+        public ObservableCollection<PasswordEntry> GetAll()
+            => Entries;
 
         public void SaveData()
         {
-            string json = JsonConvert.SerializeObject(_entries);
+            string json = JsonConvert.SerializeObject(Entries);
 
             byte[] encrypted = _cryptoService.Encrypt(json, _currentKey);
 
@@ -66,13 +66,13 @@ namespace PasswordManager.Services
             _currentKey = key;
             if (!File.Exists(_filePath))
             {
-                _entries = new List<PasswordEntry>();
+                Entries = new ObservableCollection<PasswordEntry>();
                 return;
             }
 
             byte[] encryptedData = File.ReadAllBytes(_filePath);
             string json = _cryptoService.Decrypt(encryptedData, _currentKey);
-            _entries = JsonConvert.DeserializeObject<List<PasswordEntry>>(json) ?? new List<PasswordEntry>();
+            Entries = JsonConvert.DeserializeObject<ObservableCollection<PasswordEntry>>(json) ?? new ObservableCollection<PasswordEntry>();
         }
     }
 }

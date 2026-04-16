@@ -1,7 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PasswordManager.Core.Interfaces;
+using PasswordManager.Core.Models;
+using System.Collections.ObjectModel;
 using System.Security.Cryptography;
+using System.Windows;
+using System.Windows.Media;
 
 namespace PasswordManager.App.ViewModels
 {
@@ -25,6 +29,11 @@ namespace PasswordManager.App.ViewModels
         }
 
         //Свойства
+        public ObservableCollection<PasswordEntry> Entries => _exportImportService.Entries;
+
+        private byte[] _cipherText;
+        private byte[] _key;
+
         [ObservableProperty]
         private bool _useUpperCase = false;
 
@@ -55,14 +64,37 @@ namespace PasswordManager.App.ViewModels
         [ObservableProperty]
         private string _decryptedText = "";
 
-        private byte[] _cipherText;
-        private byte[] _key;
+        // Свойства для добавления новой записи
+        [ObservableProperty]
+        private string _entryTitle = "";
+
+        [ObservableProperty]
+        private string _entryLogin = "";
+
+        [ObservableProperty]
+        private string _entryPassword = "";
+
+        [ObservableProperty]
+        private string _entryUrl = "";
+
+        [ObservableProperty]
+        private string _entryNotes = "";
 
         //Команды
         [RelayCommand]
         public void Generate()
         {
-            GeneratedPassword = _passwordGeneratorService.Generate(UseUpperCase, UseLowerCase, UseNumbers, UseSymbols, PasswordLength);
+            if (!UseUpperCase && !UseLowerCase && !UseNumbers && !UseSymbols)
+                MessageBox.Show("Выберете как минимум один из \"флажков\" для генерации. Например, Нижний регистр  (a – z).");
+
+            else
+                GeneratedPassword = _passwordGeneratorService.Generate(UseUpperCase, UseLowerCase, UseNumbers, UseSymbols, PasswordLength);
+        }
+
+        [RelayCommand]
+        public void CopyInClipboard()
+        {
+            Clipboard.SetText(GeneratedPassword);
         }
 
         [RelayCommand]
@@ -97,6 +129,26 @@ namespace PasswordManager.App.ViewModels
                 throw new ArgumentNullException("Ошибка! Сначала зашифруйте текст");
 
             DecryptedText =  _cryptoService.Decrypt(_cipherText, _key);
+        }
+
+        [RelayCommand]
+        public void SaveEntry()
+        {
+            PasswordEntry newEntry = new PasswordEntry(EntryTitle, EntryLogin, EntryPassword, EntryNotes);
+
+            _exportImportService.AddEntry(newEntry);
+        }
+
+        [RelayCommand]
+        public void TogglePasswordVisibility(PasswordEntry currentEntry)
+        {
+            currentEntry.IsPasswordVisible = !currentEntry.IsPasswordVisible;
+        }
+
+        [RelayCommand]
+        public void CopyPassword(PasswordEntry currentEntry)
+        {
+            Clipboard.SetText(currentEntry.Password);
         }
     }
 }
