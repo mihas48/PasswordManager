@@ -11,7 +11,6 @@ namespace PasswordManager.Core.Models
         private string _password;
         private string _category;
         private string _notes;
-        private readonly DateTime _createdAt;
         private DateTime _updatedAt;
         private bool _isPasswordVisible;
 
@@ -117,8 +116,6 @@ namespace PasswordManager.Core.Models
             get => _notes;
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentException("Ошибка! Значение заметок не может быть пустым!");
                 if (_notes != value)
                 {
                     _notes = value;
@@ -130,8 +127,10 @@ namespace PasswordManager.Core.Models
         }
 
         public Guid Id => _id;
-        public DateTime CreatedAt => _createdAt;
-        public DateTime UpdatedAt => _updatedAt;
+        public DateTime UpdatedAt
+        {
+            get; set;
+        }
 
         public PasswordEntry(string title, string login, string password, string notes)
         {
@@ -139,9 +138,6 @@ namespace PasswordManager.Core.Models
             Login = login;
             Password = password;
             Notes = notes;
-
-            _createdAt = DateTime.Now;
-            _updatedAt = _createdAt;
             _id = Guid.NewGuid();
         }
     }

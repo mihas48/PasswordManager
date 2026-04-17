@@ -34,6 +34,33 @@ namespace PasswordManager.App.ViewModels
         private byte[] _cipherText;
         private byte[] _key;
 
+        private PasswordEntry _selectedEntry;
+
+        public PasswordEntry SelectedEntry
+        {
+            get => _selectedEntry;
+            set
+            {
+                if (_selectedEntry != value)
+                {
+                    _selectedEntry = value;
+                    OnPropertyChanged();
+
+                    if (value != null)
+                    {
+                        EntryTitle = value.Title;
+                        EntryLogin = value.Login;
+                        EntryPassword = value.Password;
+                        EntryNotes = value.Notes;
+                    }
+                    else
+                    {
+                        EntryTitle = EntryLogin = EntryPassword = EntryNotes = "";
+                    }
+                }
+            }
+        }
+
         [ObservableProperty]
         private bool _useUpperCase = false;
 
@@ -135,6 +162,7 @@ namespace PasswordManager.App.ViewModels
         public void SaveEntry()
         {
             PasswordEntry newEntry = new PasswordEntry(EntryTitle, EntryLogin, EntryPassword, EntryNotes);
+            newEntry.UpdatedAt = DateTime.Now;
 
             _exportImportService.AddEntry(newEntry);
         }
@@ -149,6 +177,40 @@ namespace PasswordManager.App.ViewModels
         public void CopyPassword(PasswordEntry currentEntry)
         {
             Clipboard.SetText(currentEntry.Password);
+        }
+
+        [RelayCommand]
+        public void DeleteEntry()
+        {
+            if (SelectedEntry == null)
+            {
+                MessageBox.Show("Перед удалением выберете элемент из списка");
+                return;
+            }
+
+            _exportImportService.RemoveEntry(SelectedEntry.Id);
+        }
+
+        [RelayCommand]
+        public void UpdateEntry()
+        {
+            if (SelectedEntry == null)
+            {
+                MessageBox.Show("Перед редактированием выберете элемент из списка");
+                return;
+            }
+
+            PasswordEntry newEntry = new PasswordEntry(EntryTitle, EntryLogin, EntryPassword, EntryNotes);
+            newEntry.UpdatedAt = DateTime.Now;
+
+            if (SelectedEntry.Title == EntryTitle && SelectedEntry.Login == EntryLogin &&
+                SelectedEntry.Password == EntryPassword && SelectedEntry.Notes == EntryNotes)
+            {
+                MessageBox.Show("Новые данные полностью соответствуют исходным", "Ошибка редактирования", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            _exportImportService.UpdateEntry(SelectedEntry.Id, newEntry);
         }
     }
 }

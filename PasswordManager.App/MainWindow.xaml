@@ -332,14 +332,17 @@
                                 <Button Content="＋  Добавить"
                                         Style="{StaticResource BtnGreen}"
                                         Height="36" Padding="16,0"
-                                        Margin="0,0,8,0"/>
+                                        Margin="0,0,8,0"
+                                        Command="{Binding SaveEntryCommand}"/>
                                 <Button Content="✏️  Изменить"
                                         Style="{StaticResource BtnOutline}"
                                         Height="36" Padding="16,0"
-                                        Margin="0,0,8,0"/>
+                                        Margin="0,0,8,0"
+                                        Command="{Binding UpdateEntryCommand}"/>
                                 <Button Content="🗑️  Удалить"
                                         Style="{StaticResource BtnDanger}"
-                                        Height="36" Padding="16,0"/>
+                                        Height="36" Padding="16,0"
+                                        Command="{Binding DeleteEntryCommand}"/>
                             </StackPanel>
                         </Grid>
 
@@ -367,16 +370,18 @@
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Название"
                                                         Binding="{Binding Title}"
-                                                        Width="*" MinWidth="120"/>
+                                                        Width="0.5*" MinWidth="120"/>
                                     <DataGridTextColumn Header="Логин"
                                                         Binding="{Binding Login}"
-                                                        Width="*" MinWidth="120"/>
+                                                        Width="0.5*" MinWidth="80"/>
                                     <DataGridTemplateColumn Header="Пароль">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <StackPanel Orientation="Horizontal">
+                                                <StackPanel Orientation="Horizontal"
+                                                            MinWidth="150">
                                                     <TextBlock Text="{Binding DisplayPassword}"/>
-                                                    <Button Content="👁" 
+                                                    <Button Margin="20, 0, 0, 0"
+                                                            Content="👁" 
                                                             Command="{Binding DataContext.TogglePasswordVisibilityCommand, 
                                                         RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                             CommandParameter="{Binding}"/>
@@ -388,12 +393,12 @@
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    <!--                                    <DataGridTextColumn Header="URL / Сайт"
-                                                        Binding="{Binding Url}"
-                                                        Width="1.3*" MinWidth="140"/>-->
                                     <DataGridTextColumn Header="Заметки"
                                                         Binding="{Binding Notes}"
                                                         Width="1.5*" MinWidth="150"/>
+                                    <DataGridTextColumn Header="Обновлено"
+                                                        Binding="{Binding UpdatedAt}"
+                                                        MinWidth="100"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Border>
@@ -470,15 +475,6 @@
                                                      UpdateSourceTrigger=PropertyChanged}"/>
                                     </StackPanel>
                                 </Grid>
-
-                                <StackPanel Orientation="Horizontal"
-                                            HorizontalAlignment="Right"
-                                            Margin="0,18,0,0">
-                                    <Button Content="Сохранить запись"
-                                            Style="{StaticResource BtnGreen}"
-                                            Height="38" Padding="22,0"
-                                            Command="{Binding SaveEntryCommand}"/>
-                                </StackPanel>
                             </StackPanel>
                         </Border>
 
