@@ -65,7 +65,7 @@ namespace PasswordManager.Core.Models
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentException("Ошибка! Значение имени сервиса не может быть пустым!");
+                    throw new ArgumentException("Значение имени сервиса не может быть пустым!");
                 if (_title != value)
                 {
                     _title = value;
@@ -82,7 +82,7 @@ namespace PasswordManager.Core.Models
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentException("Ошибка! Значение имени пользователя не может быть пустым!");
+                    throw new ArgumentException("Значение имени пользователя не может быть пустым!");
                 if (_login != value)
                 {
                     _login = value;
@@ -99,7 +99,7 @@ namespace PasswordManager.Core.Models
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentException("Ошибка! Значение пароля не может быть пустым!");
+                    throw new ArgumentException("Значение пароля не может быть пустым!");
                 if (_password != value)
                 {
                     _password = value;
@@ -134,6 +134,13 @@ namespace PasswordManager.Core.Models
 
         public PasswordEntry(string title, string login, string password, string notes)
         {
+            if (string.IsNullOrEmpty(title))
+                throw new ArgumentNullException("Название");
+            if (string.IsNullOrEmpty(login))
+                throw new ArgumentNullException("Логин");
+            if (string.IsNullOrEmpty(password))
+                throw new ArgumentNullException("Пароль");
+
             Title = title;
             Login = login;
             Password = password;

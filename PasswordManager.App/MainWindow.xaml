@@ -342,7 +342,7 @@
                                 <Button Content="🗑️  Удалить"
                                         Style="{StaticResource BtnDanger}"
                                         Height="36" Padding="16,0"
-                                        Command="{Binding DeleteEntryCommand}"/>
+                                        Command="{Binding RemoveEntryCommand}"/>
                             </StackPanel>
                         </Grid>
 

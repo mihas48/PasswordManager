@@ -130,41 +130,71 @@ namespace PasswordManager.App.ViewModels
             _loggerService.Log("Сообщение");
         }
 
+        //команда для демонстрации шифрования
         [RelayCommand]
         public void Encrypt()
         {
-            if (TextForEncrypt == "")
-                throw new ArgumentNullException("Ошибка! Поле текста для шифрования пусто!");
+            try
+            {
+                if (TextForEncrypt == "")
+                {
+                    throw new ArgumentNullException("Текс для шифрования");
+                }
 
-            byte[] salt = new byte[32];
-            RandomNumberGenerator.Fill(salt);
+                byte[] salt = new byte[32];
+                RandomNumberGenerator.Fill(salt);
 
-            string masterPassword = "VeryStrongPassword";
+                //предопределённый пароль
+                string masterPassword = "VeryStrongPassword";
 
-            byte[] key = _cryptoService.DeriveKey(masterPassword, salt);
-            _key = key;
+                byte[] key = _cryptoService.DeriveKey(masterPassword, salt);
+                _key = key;
 
-            _cipherText = _cryptoService.Encrypt(TextForEncrypt, key);
+                _cipherText = _cryptoService.Encrypt(TextForEncrypt, key);
 
-            EncryptedText = System.Convert.ToBase64String(_cipherText); 
+                EncryptedText = System.Convert.ToBase64String(_cipherText);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
         }
 
+        //команда для демонстрации дешифрования
         [RelayCommand]
         public void Decrypt()
         {
-            if (EncryptedText == "")
-                throw new ArgumentNullException("Ошибка! Сначала зашифруйте текст");
+            try
+            {
+                if (EncryptedText == "")
+                {
+                    throw new ArgumentException("Сначала зашифруйте текст");
+                }
 
-            DecryptedText =  _cryptoService.Decrypt(_cipherText, _key);
+                DecryptedText = _cryptoService.Decrypt(_cipherText, _key);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         [RelayCommand]
         public void SaveEntry()
         {
-            PasswordEntry newEntry = new PasswordEntry(EntryTitle, EntryLogin, EntryPassword, EntryNotes);
-            newEntry.UpdatedAt = DateTime.Now;
+            try
+            {
+                PasswordEntry newEntry = new PasswordEntry(EntryTitle, EntryLogin, EntryPassword, EntryNotes);
+                newEntry.UpdatedAt = DateTime.Now;
 
-            _exportImportService.AddEntry(newEntry);
+                _exportImportService.AddEntry(newEntry);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
         }
 
         [RelayCommand]
@@ -180,37 +210,50 @@ namespace PasswordManager.App.ViewModels
         }
 
         [RelayCommand]
-        public void DeleteEntry()
+        public void RemoveEntry()
         {
+            try
+            {
             if (SelectedEntry == null)
             {
-                MessageBox.Show("Перед удалением выберете элемент из списка");
-                return;
+                throw new ArgumentException("Перед удалением выберете элемент из списка");
             }
 
             _exportImportService.RemoveEntry(SelectedEntry.Id);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
         }
 
         [RelayCommand]
         public void UpdateEntry()
         {
-            if (SelectedEntry == null)
+            try
             {
-                MessageBox.Show("Перед редактированием выберете элемент из списка");
+                if (SelectedEntry == null)
+                {
+                    throw new ArgumentException("Перед редактированием выберете элемент из списка");
+                }
+
+                PasswordEntry newEntry = new PasswordEntry(EntryTitle, EntryLogin, EntryPassword, EntryNotes);
+                newEntry.UpdatedAt = DateTime.Now;
+
+                if (SelectedEntry.Title == EntryTitle && SelectedEntry.Login == EntryLogin &&
+                    SelectedEntry.Password == EntryPassword && SelectedEntry.Notes == EntryNotes)
+                {
+                    throw new ArgumentException("Новые данные полностью соответствуют исходным");
+                }
+
+                _exportImportService.UpdateEntry(SelectedEntry.Id, newEntry);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-
-            PasswordEntry newEntry = new PasswordEntry(EntryTitle, EntryLogin, EntryPassword, EntryNotes);
-            newEntry.UpdatedAt = DateTime.Now;
-
-            if (SelectedEntry.Title == EntryTitle && SelectedEntry.Login == EntryLogin &&
-                SelectedEntry.Password == EntryPassword && SelectedEntry.Notes == EntryNotes)
-            {
-                MessageBox.Show("Новые данные полностью соответствуют исходным", "Ошибка редактирования", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            _exportImportService.UpdateEntry(SelectedEntry.Id, newEntry);
         }
     }
 }
