@@ -8,6 +8,7 @@ namespace PasswordManager.Services
     public class ExportImportService : IExportImportService
     {
         public ObservableCollection<PasswordEntry> Entries { get; private set; }
+        public List<HashBlock> Blockchain { get; private set; }
         private ICryptoService _cryptoService;
         private readonly string _filePath; //файл с зашифрованными данными
         private byte[] _currentKey;
@@ -73,6 +74,19 @@ namespace PasswordManager.Services
             byte[] encryptedData = File.ReadAllBytes(_filePath);
             string json = _cryptoService.Decrypt(encryptedData, _currentKey);
             Entries = JsonConvert.DeserializeObject<ObservableCollection<PasswordEntry>>(json) ?? new ObservableCollection<PasswordEntry>();
+        }
+
+        public void LoadBlockchain()
+        {
+            if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "blockchain.dat")))
+            {
+                Blockchain = new List<HashBlock>();
+                return;
+            }
+
+            string blockchainJson = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "blockchain.dat"));
+
+            Blockchain = JsonConvert.DeserializeObject<List<HashBlock>>(blockchainJson);
         }
     }
 }
