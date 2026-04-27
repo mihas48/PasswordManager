@@ -11,23 +11,25 @@ namespace PasswordManager.App
         {
             base.OnStartup(e);
 
-            // Создаём экземпляры сервисов
             ICryptoService cryptoService = new CryptoService();
             IAuthService authService = new AuthService(cryptoService);
-            IExportImportService exportImportService = new ExportImportService(cryptoService, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "passwords.dat"));
+            IBlockchainService blockchainService = new BlockchainService();
+            IExportImportService exportImportService = new ExportImportService(
+                blockchainService,
+                cryptoService,
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "passwords.dat"),
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "blockchain.dat")
+            );
             ILoggerService loggerService = new LoggerService(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log.txt"));
             IPasswordGeneratorService passwordGeneratorService = new PasswordGeneratorService();
 
-            // Проверяем, создан ли профиль
             if (authService.IsMasterPasswordSet())
             {
-                // Создаём окно логина и передаём ему сервисы
                 var loginWindow = new LoginWindow(authService, exportImportService, cryptoService, loggerService, passwordGeneratorService);
                 loginWindow.Show();
             }
             else
             {
-                // Создаём окно регистрации и передаём ему сервисы
                 var registrationWindow = new RegistrationWindow(authService, exportImportService, cryptoService, loggerService, passwordGeneratorService);
                 registrationWindow.Show();
             }

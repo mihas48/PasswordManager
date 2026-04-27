@@ -124,12 +124,6 @@ namespace PasswordManager.App.ViewModels
             Clipboard.SetText(GeneratedPassword);
         }
 
-        [RelayCommand]
-        public void Log()
-        {
-            _loggerService.Log("Сообщение");
-        }
-
         //команда для демонстрации шифрования
         [RelayCommand]
         public void Encrypt()
