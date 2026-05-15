@@ -319,6 +319,11 @@
                             <StackPanel Orientation="Horizontal"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center">
+                                <Button Content="📄 Сформировать отчёт за текущую сессию"
+                                        Command="{Binding GenerateLogReportCommand}"
+                                        Style="{StaticResource BtnGreen}"
+                                        Margin="0,0,85,0"/>
+
                                 <Button Content="＋  Добавить"
                                         Style="{StaticResource BtnGreen}"
                                         Height="36" Padding="16,0"

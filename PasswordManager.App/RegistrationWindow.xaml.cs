@@ -45,10 +45,13 @@ namespace PasswordManager.App
             if (string.IsNullOrEmpty(confirm) || password != confirm)
             {
                 MessageBox.Show("Пароли не совпадают");
+                _loggerService.Log($"Ошибка регистрации. Пароли не совпадают");
                 return;
             }
             _authService.CreateMasterPassword(password);
             MessageBox.Show("Мастер-пароль создан. Теперь войдите.");
+
+            _loggerService.Log($"Создан мастер пароль");
 
             // Открываем окно входа в профиль
             var loginWindow = new LoginWindow(_authService, _exportImportService, _cryptoService, _loggerService, _passwordGeneratorService);

@@ -135,11 +135,11 @@ namespace PasswordManager.Core.Models
         public PasswordEntry(string title, string login, string password, string notes)
         {
             if (string.IsNullOrEmpty(title))
-                throw new ArgumentNullException("Название");
+                throw new Exception("Поле \"Название\" не может быть пустым");
             if (string.IsNullOrEmpty(login))
-                throw new ArgumentNullException("Логин");
+                throw new Exception("Поле \"Логин\" не может быть пустым");
             if (string.IsNullOrEmpty(password))
-                throw new ArgumentNullException("Пароль");
+                throw new Exception("Поле \"Пароль\" не может быть пустым");
 
             Title = title;
             Login = login;

@@ -45,8 +45,11 @@ namespace PasswordManager.App
             if (!_authService.ValidateMasterPassword(password))
             {
                 MessageBox.Show("Неверный пароль");
+                _loggerService.Log($"Ошибка авторизации. Неверный пароль");
                 return;
             }
+
+            _loggerService.Log($"Выполнена авторизация");
 
             // Получаем ключ
             byte[] encryptionKey = _authService.GetEncryptionKey();
@@ -58,6 +61,7 @@ namespace PasswordManager.App
             }
             catch (Exception ex)
             {
+                _loggerService.Log($"Ошибка загрузки данных: {ex.Message}");
                 MessageBox.Show($"Ошибка загрузки: {ex.Message}");
                 return;
             }

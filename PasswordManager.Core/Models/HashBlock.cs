@@ -1,15 +1,11 @@
-﻿using System.Security.Cryptography;
+﻿using Newtonsoft.Json;
+using System.Security.Cryptography;
 
 namespace PasswordManager.Core.Models
 {
     public class HashBlock
     {
-        public enum OperationType
-        {
-            Created,
-            Updated,
-            Deleted
-        }
+        public enum OperationType { Created, Updated, Deleted }
 
         public byte[] CurrentHash { get; private set; }
         public byte[] PreviousHash { get; private set; }
@@ -19,6 +15,7 @@ namespace PasswordManager.Core.Models
         public int BlockId { get; private set; }
         public OperationType Operation { get; private set; }
 
+        // Конструктор для создания нового блока
         public HashBlock(byte[] previousHash, Guid entryId, byte[] entryHash, int blockId, OperationType operation)
         {
             PreviousHash = previousHash ?? new byte[32];
@@ -29,15 +26,27 @@ namespace PasswordManager.Core.Models
             Date = DateTime.UtcNow;
 
             using var stream = new MemoryStream();
-
             stream.Write(PreviousHash, 0, PreviousHash.Length);
             stream.Write(entryId.ToByteArray(), 0, 16);
             stream.Write(entryHash, 0, entryHash.Length);
             stream.Write(BitConverter.GetBytes(blockId), 0, 4);
             stream.WriteByte((byte)operation);
             stream.Write(BitConverter.GetBytes(Date.Ticks), 0, 8);
-
             CurrentHash = SHA256.HashData(stream.ToArray());
+        }
+
+        // Конструктор для десериализации — берёт данные как есть, ничего не пересчитывает
+        [Newtonsoft.Json.JsonConstructor]
+        private HashBlock(byte[] currentHash, byte[] previousHash, DateTime date,
+                          Guid entryId, byte[] entryHash, int blockId, OperationType operation)
+        {
+            CurrentHash = currentHash;
+            PreviousHash = previousHash;
+            Date = date;
+            EntryId = entryId;
+            EntryHash = entryHash;
+            BlockId = blockId;
+            Operation = operation;
         }
     }
 }

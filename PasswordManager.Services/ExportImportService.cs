@@ -25,6 +25,9 @@ namespace PasswordManager.Services
             _blockchainFilePath = blockchainFilePath;
 
             Entries = new ObservableCollection<PasswordEntry>();
+
+            //throw new Exception($"ExportImportService ctor: data={_dataFilePath}\nblockchain={_blockchainFilePath}");
+
             LoadBlockchain();
         }
 
@@ -50,7 +53,10 @@ namespace PasswordManager.Services
         private void AddBlock(Guid entryId, byte[] entryHash, HashBlock.OperationType operation)
         {
             int newBlockId = Blockchain.Count;
-            byte[] previousHash = Blockchain.Count > 0 ? Blockchain.Last().CurrentHash : null;
+            byte[] previousHash = Blockchain.Count > 0
+                ? Blockchain.Last().CurrentHash
+                : new byte[32];
+
             var newBlock = new HashBlock(previousHash, entryId, entryHash, newBlockId, operation);
             Blockchain.Add(newBlock);
             SaveBlockchain();
@@ -111,15 +117,71 @@ namespace PasswordManager.Services
         public void LoadData(byte[] key)
         {
             _currentKey = key;
+
+            LoadBlockchain();
+
             if (!File.Exists(_dataFilePath))
             {
                 Entries = new ObservableCollection<PasswordEntry>();
+                if (Blockchain.Count > 0)
+                {
+                    Blockchain.Clear();
+                    SaveBlockchain();
+                }
                 return;
             }
 
             byte[] encryptedData = File.ReadAllBytes(_dataFilePath);
             string json = _cryptoService.Decrypt(encryptedData, _currentKey);
-            Entries = JsonConvert.DeserializeObject<ObservableCollection<PasswordEntry>>(json) ?? new ObservableCollection<PasswordEntry>();
+            Entries = JsonConvert.DeserializeObject<ObservableCollection<PasswordEntry>>(json)
+                      ?? new ObservableCollection<PasswordEntry>();
+
+            // Recovery только если реально нужно
+            bool needsSave = false;
+
+            foreach (var entry in Entries)
+            {
+                var lastBlock = Blockchain
+                    .Where(b => b.EntryId == entry.Id)
+                    .OrderByDescending(b => b.BlockId)
+                    .FirstOrDefault();
+
+                bool needsBlock = lastBlock == null
+                    || lastBlock.Operation == HashBlock.OperationType.Deleted;
+
+                if (needsBlock)
+                {
+                    byte[] entryHash = ComputeEntryHash(entry);
+                    int newBlockId = Blockchain.Count;
+                    byte[] previousHash = Blockchain.Count > 0
+                        ? Blockchain.Last().CurrentHash
+                        : new byte[32];
+
+                    var newBlock = new HashBlock(previousHash, entry.Id, entryHash, newBlockId, HashBlock.OperationType.Created);
+                    Blockchain.Add(newBlock);
+                    needsSave = true;
+                }
+            }
+
+            var orphanedBlocks = Blockchain
+                .GroupBy(b => b.EntryId)
+                .Select(g => g.OrderByDescending(b => b.BlockId).First())
+                .Where(b => b.Operation != HashBlock.OperationType.Deleted
+                            && !Entries.Any(e => e.Id == b.EntryId))
+                .ToList();
+
+            foreach (var block in orphanedBlocks)
+            {
+                int newBlockId = Blockchain.Count;
+                byte[] previousHash = Blockchain.Last().CurrentHash;
+                var deletedBlock = new HashBlock(previousHash, block.EntryId, block.EntryHash, newBlockId, HashBlock.OperationType.Deleted);
+                Blockchain.Add(deletedBlock);
+                needsSave = true;
+            }
+
+            // Сохраняем только если что-то восстанавливали
+            if (needsSave)
+                SaveBlockchain();
 
             if (Blockchain.Count > 0)
                 _blockchainService.VerifyIntegrity(Entries, Blockchain);

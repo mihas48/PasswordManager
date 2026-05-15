@@ -20,7 +20,7 @@ namespace PasswordManager.App
                 Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "passwords.dat"),
                 Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "blockchain.dat")
             );
-            ILoggerService loggerService = new LoggerService(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log.txt"));
+            ILoggerService loggerService = new LoggerService();
             IPasswordGeneratorService passwordGeneratorService = new PasswordGeneratorService();
 
             if (authService.IsMasterPasswordSet())
