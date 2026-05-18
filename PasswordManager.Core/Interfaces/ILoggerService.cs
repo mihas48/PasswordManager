@@ -4,5 +4,6 @@
     {
         void Log(string message);
         IReadOnlyList<string> GetLogs();
+        void ClearLogs();
     }
 }

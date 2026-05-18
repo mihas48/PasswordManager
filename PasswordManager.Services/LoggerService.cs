@@ -20,7 +20,6 @@ namespace PasswordManager.Services
             }
         }
 
-        // Метод для получения всех логов (копия, чтобы избежать изменений извне)
         public IReadOnlyList<string> GetLogs()
         {
             lock (_lock)
@@ -29,7 +28,6 @@ namespace PasswordManager.Services
             }
         }
 
-        // Опционально: очистка логов
         public void ClearLogs()
         {
             lock (_lock)
