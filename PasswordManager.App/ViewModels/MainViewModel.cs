@@ -226,6 +226,116 @@ namespace PasswordManager.App.ViewModels
             }
         }
 
+        [RelayCommand]
+        public void GenerateLogReport()
+        {
+            var logs = _loggerService.GetLogs();
+            if (logs.Count == 0)
+            {
+                MessageBox.Show("Нет логов для отображения.", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var saveDialog = new SaveFileDialog
+            {
+                Filter = "HTML files (*.html)|*.html",
+                DefaultExt = ".html",
+                FileName = $"LogReport_{DateTime.Now:yyyyMMdd_HHmmss}.html"
+            };
+
+            if (saveDialog.ShowDialog() == true)
+            {
+                string htmlContent = BuildHtmlReport(logs);
+                File.WriteAllText(saveDialog.FileName, htmlContent);
+                MessageBox.Show($"Отчёт сохранён: {saveDialog.FileName}", "Готово", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private string BuildHtmlReport(IReadOnlyList<string> logs)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("<!DOCTYPE html>");
+            sb.AppendLine("<html>");
+            sb.AppendLine("<head>");
+            sb.AppendLine("<meta charset='UTF-8'>");
+            sb.AppendLine("<title>Журнал событий Password Manager</title>");
+            sb.AppendLine(@"
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #F0F9F0;
+        margin: 40px;
+    }
+    h1 {
+        color: #2E7D32;
+        border-bottom: 2px solid #81C784;
+        padding-bottom: 10px;
+    }
+    .log-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th {
+        background: #2E7D32;
+        color: white;
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+    }
+    td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #E8F5E9;
+        font-family: 'Consolas', monospace;
+        font-size: 13px;
+    }
+    tr:hover {
+        background-color: #F1F8E9;
+    }
+    .footer {
+        margin-top: 20px;
+        font-size: 12px;
+        color: #558B2F;
+        text-align: center;
+    }
+</style>");
+            sb.AppendLine("</head>");
+            sb.AppendLine("<body>");
+            sb.AppendLine("<h1>📄 Журнал действий Password Manager</h1>");
+            sb.AppendLine("<div class='log-container'>");
+            sb.AppendLine("<table>");
+            sb.AppendLine("<tr><th>#</th><th>Дата и время</th><th>Сообщение</th></tr>");
+
+            int index = 1;
+            foreach (string log in logs)
+            {
+                int firstBracket = log.IndexOf(']');
+                if (firstBracket > 0)
+                {
+                    string timestamp = log.Substring(1, firstBracket - 1);
+                    string message = log.Substring(firstBracket + 3);
+                    sb.AppendLine($"<tr><td>{index++}</td><td>{timestamp}</td><td>{EscapeHtml(message)}</td></tr>");
+                }
+                else
+                {
+                    sb.AppendLine($"<tr><td>{index++}</td><td>—</td><td>{EscapeHtml(log)}</td></tr>");
+                }
+            }
+
+            sb.AppendLine("</table>");
+            sb.AppendLine("</div>");
+            sb.AppendLine($"<div class='footer'>Сгенерировано: {DateTime.Now:yyyy-MM-dd HH:mm:ss}</div>");
+            sb.AppendLine("</body>");
+            sb.AppendLine("</html>");
+
+            return sb.ToString();
+        }
+
         private string BuildSingleEntryHtml(PasswordEntry entry)
         {
             var sb = new StringBuilder();
