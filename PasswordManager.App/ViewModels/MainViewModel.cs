@@ -134,7 +134,7 @@ namespace PasswordManager.App.ViewModels
             {
                 if (TextForEncrypt == "")
                 {
-                    throw new ArgumentNullException("Текс для шифрования");
+                    throw new Exception("Поле текста для шифрования не может быть пустым!");
                 }
 
                 byte[] salt = new byte[32];
@@ -358,7 +358,7 @@ namespace PasswordManager.App.ViewModels
                     sb.AppendLine($"<tr><td>{index++}</td><td>—</td><td>{EscapeHtml(log)}</td></tr>");
                 }
             }
-
+ 
             sb.AppendLine("</table>");
             sb.AppendLine("</div>");
             sb.AppendLine($"<div class='footer'>Сгенерировано: {DateTime.Now:yyyy-MM-dd HH:mm:ss}</div>");
